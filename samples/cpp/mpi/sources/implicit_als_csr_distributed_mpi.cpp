@@ -469,8 +469,8 @@ void all2all(ByteBuffer *nodeResults, KeyValueDataCollectionPtr result)
     memoryBuf = 0;
     for (int i = 0; i < nBlocks; i++)
     {
-        daal::services::daal_memcpy_s(&serializedSendData[memoryBuf], (size_t)perNodeArchLengths[i],
-                                      &nodeResults[i][0], (size_t)perNodeArchLengths[i]);
+        daal::services::internal::daal_memcpy_s(&serializedSendData[memoryBuf], (size_t)perNodeArchLengths[i],
+                                                &nodeResults[i][0], (size_t)perNodeArchLengths[i]);
         memoryBuf += perNodeArchLengths[i];
     }
 
