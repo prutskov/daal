@@ -284,21 +284,22 @@ public:
  *
  */
 template<typename algorithmFPType = DAAL_ALGORITHM_FP_TYPE, Method method = defaultDense>
-class DAAL_EXPORT Online : public classifier::training::Online
+class DAAL_EXPORT Online : public classifier::training::BaseOnline
 {
 public:
-    typedef classifier::training::Online super;
+    typedef classifier::training::BaseOnline super;
 
-    typedef typename super::InputType                                    InputType;
+    typedef algorithms::multinomial_naive_bayes::training::Input InputType;
     typedef algorithms::multinomial_naive_bayes::Parameter   ParameterType;
     typedef algorithms::multinomial_naive_bayes::training::Result        ResultType;
     typedef algorithms::multinomial_naive_bayes::training::PartialResult PartialResultType;
 
+    InputType input;
     /**
      * Default constructor
      * \param nClasses  Number of classes
      */
-    Online(size_t nClasses) : parameter(nClasses)
+    Online(size_t nClasses) : parameter(nClasses), input()
     {
         initialize();
     }
@@ -310,7 +311,7 @@ public:
      *                  and parameters of the algorithm
      */
     Online(const Online<algorithmFPType, method> &other) :
-        classifier::training::Online(other), parameter(other.parameter)
+        super(other), parameter(other.parameter), input(other.input)
     {
         initialize();
     }
@@ -408,6 +409,7 @@ protected:
     void initialize()
     {
         _ac = new __DAAL_ALGORITHM_CONTAINER(online, OnlineContainer, algorithmFPType, method)(&_env);
+        _in = &input;
         _par = &parameter;
         _result.reset(new ResultType());
         _partialResult.reset(new PartialResultType());

@@ -145,12 +145,12 @@ protected:
 namespace interface2
 {
 /**
- * @defgroup classifier_training_online Online
+ * @defgroup classifier_training_online BaseOnline
  * @ingroup training
  * @{
  */
 /**
- * <a name="DAAL-CLASS-ALGORITHMS__CLASSIFIER__TRAINING__ONLINE"></a>
+ * <a name="DAAL-CLASS-ALGORITHMS__CLASSIFIER__TRAINING__BASEONLINE"></a>
  *  \brief Algorithm class for training the classifier model in the online processing mode
  *
  * \par Enumerations
@@ -161,20 +161,14 @@ namespace interface2
  *      - \ref interface1::Parameter "Parameter" class
  *      - \ref interface1::Model "Model" class
  */
-class DAAL_EXPORT Online : public Training<online>
+class DAAL_EXPORT BaseOnline : public Training<online>
 {
 public:
-    typedef algorithms::classifier::training::Input         InputType;
     typedef algorithms::classifier::Parameter               ParameterType;
     typedef algorithms::classifier::training::Result        ResultType;
     typedef algorithms::classifier::training::PartialResult PartialResultType;
 
-    InputType input;     /*!< %Input objects of the algorithm */
-
-    Online()
-    {
-        initialize();
-    }
+    BaseOnline(){}
 
     /**
      * Constructs a classifier training algorithm by copying input objects and parameters
@@ -182,12 +176,9 @@ public:
      * \param[in] other An algorithm to be used as the source to initialize the input objects
      *                  and parameters of the algorithm
      */
-    Online(const Online &other) : input(other.input)
-    {
-        initialize();
-    }
+    BaseOnline(const BaseOnline &other){}
 
-    virtual ~Online() {}
+    virtual ~BaseOnline() {}
 
     /**
      * Registers user-allocated memory for storing partial training results
@@ -232,14 +223,73 @@ public:
      * and parameters of this classifier training algorithm
      * \return Pointer to the newly allocated algorithm
      */
+    services::SharedPtr<BaseOnline> clone() const
+    {
+        return services::SharedPtr<BaseOnline>(cloneImpl());
+    }
+
+protected:
+    PartialResultPtr _partialResult;
+    ResultPtr _result;
+
+    virtual BaseOnline * cloneImpl() const DAAL_C11_OVERRIDE = 0;
+};
+/**
+ * @defgroup classifier_training_online Online
+ * @ingroup training
+ * @{
+ */
+/**
+ * <a name="DAAL-CLASS-ALGORITHMS__CLASSIFIER__TRAINING__ONLINE"></a>
+ *  \brief Algorithm class for training the classifier model in the online processing mode
+ *
+ * \par Enumerations
+ *      - \ref InputId  %Input objects of the classifier model training algorithm
+ *      - \ref ResultId Results of the classifier model training algorithm
+ *
+ * \par References
+ *      - \ref interface1::Parameter "Parameter" class
+ *      - \ref interface1::Model "Model" class
+ */
+class DAAL_EXPORT Online : public BaseOnline
+{
+public:
+    typedef algorithms::classifier::training::Input         InputType;
+    typedef algorithms::classifier::Parameter               ParameterType;
+    typedef algorithms::classifier::training::Result        ResultType;
+    typedef algorithms::classifier::training::PartialResult PartialResultType;
+
+    InputType input;     /*!< %Input objects of the algorithm */
+
+    Online()
+    {
+        initialize();
+    }
+
+    /**
+     * Constructs a classifier training algorithm by copying input objects and parameters
+     * of another classifier training algorithm
+     * \param[in] other An algorithm to be used as the source to initialize the input objects
+     *                  and parameters of the algorithm
+     */
+    Online(const Online &other) : input(other.input)
+    {
+        initialize();
+    }
+
+    virtual ~Online() {}
+
+    /**
+     * Returns a pointer to the newly allocated classifier training algorithm with a copy of input objects
+     * and parameters of this classifier training algorithm
+     * \return Pointer to the newly allocated algorithm
+     */
     services::SharedPtr<Online> clone() const
     {
         return services::SharedPtr<Online>(cloneImpl());
     }
 
 protected:
-    PartialResultPtr _partialResult;
-    ResultPtr _result;
 
     void initialize()
     {
@@ -249,6 +299,7 @@ protected:
 };
 /** @} */
 } // namespace interface1
+using interface2::BaseOnline;
 using interface2::Online;
 
 }
