@@ -234,19 +234,23 @@ private:
         const double a;
         const UniversalBuffer& x_buffer;
         const int incx;
+        int offsetX;
         UniversalBuffer& y_buffer;
         const int incy;
+        int offsetY;
         services::Status * status;
 
-        explicit Execute(cl::sycl::queue & queue, const uint32_t n, const double a, const UniversalBuffer& x_buffer, const int incx,
-                         UniversalBuffer& y_buffer, const int incy, services::Status * status = NULL)
+        explicit Execute(cl::sycl::queue & queue, const uint32_t n, const double a, const UniversalBuffer& x_buffer, const int incx, int offsetX,
+                         UniversalBuffer& y_buffer, const int incy, int offsetY, services::Status * status = NULL)
             : queue(queue),
               n(n),
               a(a),
               x_buffer(x_buffer),
               incx(incx),
+              offsetX(offsetX),
               y_buffer(y_buffer),
               incy(incy),
+              offsetY(offsetY),
               status(status)
         {}
 
@@ -269,16 +273,16 @@ private:
 #else
             MKLAxpy<algorithmFPType> functor(queue);
 #endif
-            statusAxpy = functor(n, (algorithmFPType)a, x_buffer_t, incx, y_buffer_t, incy);
+            statusAxpy = functor(n, (algorithmFPType)a, x_buffer_t, incx, offsetX, y_buffer_t, incy, offsetY);
             services::internal::tryAssignStatus(status, statusAxpy);
         }
     };
 
 public:
-    static void run(cl::sycl::queue & queue, const uint32_t n, const double a, const UniversalBuffer x_buffer, const int incx,
-                    UniversalBuffer y_buffer, const int incy, services::Status * status = NULL)
+    static void run(cl::sycl::queue & queue, const uint32_t n, const double a, const UniversalBuffer x_buffer, const int incx, int offsetX,
+                    UniversalBuffer y_buffer, const int incy, int offsetY, services::Status * status = NULL)
     {
-        Execute op(queue, n, a, x_buffer, incx, y_buffer, incy, status);
+        Execute op(queue, n, a, x_buffer, incx, offsetX, y_buffer, incy, offsetY, status);
         TypeDispatcher::floatDispatch(x_buffer.type(), op);
     }
 };

@@ -110,7 +110,7 @@ template class ReferenceGemm<double>;
 
 template <typename algorithmFPType>
 services::Status ReferenceAxpy<algorithmFPType>::operator()(const int n, const algorithmFPType a, const services::Buffer<algorithmFPType> & x_buffer,
-                                                            const int incx, services::Buffer<algorithmFPType> & y_buffer, const int incy)
+                                                            const int incx, int offsetX, services::Buffer<algorithmFPType> & y_buffer, const int incy, int offsetY)
 {
     services::Status status;
 
@@ -124,13 +124,15 @@ services::Status ReferenceAxpy<algorithmFPType>::operator()(const int n, const a
 
     KernelPtr blas_axpy = factory.getKernel("blas_axpy");
 
-    KernelArguments args(5);
+    KernelArguments args(7);
 
     args.set(0, a);
     args.set(1, x_buffer, AccessModeId::read);
     args.set(2, incx);
-    args.set(3, y_buffer, AccessModeId::readwrite);
-    args.set(4, incy);
+    args.set(3, offsetX);
+    args.set(4, y_buffer, AccessModeId::readwrite);
+    args.set(5, incy);
+    args.set(6, offsetY);
 
     KernelRange range(n);
 

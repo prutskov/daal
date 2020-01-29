@@ -169,13 +169,9 @@ services::Status UpdateKernelOneAPI<algorithmFPType>::compute(NumericTable & xTa
 
         algorithmFPType nrowsVal = static_cast<algorithmFPType>(nRows);
         const services::Buffer<algorithmFPType> nrowsBuf(&nrowsVal, 1);
-        services::Buffer<algorithmFPType> dstNRowsBuf = xtxBuff.getSubBuffer(nBetasIntercept * nBetasIntercept - 1, 1, &status);
-        DAAL_CHECK_STATUS_VAR(status);
-        DAAL_CHECK_STATUS(status, BlasGpu<algorithmFPType>::xaxpy(1, 1, nrowsBuf, 1, dstNRowsBuf, 1));
+        DAAL_CHECK_STATUS(status, BlasGpu<algorithmFPType>::xaxpy(1, 1, nrowsBuf, 1, 0, sumXBuf, 1, nCols));
 
-        services::Buffer<algorithmFPType> dstReduceBuf = xtyBuff.getSubBuffer(nBetasIntercept - 1, (nResponses - 1) * nBetasIntercept + 1, &status);
-        DAAL_CHECK_STATUS_VAR(status);
-        DAAL_CHECK_STATUS(status, BlasGpu<algorithmFPType>::xaxpy(nResponses, 1, sumYBuf, 1, dstReduceBuf, nBetasIntercept));
+        DAAL_CHECK_STATUS(status, BlasGpu<algorithmFPType>::xaxpy(nResponses, 1, sumYBuf, 1, 0, xtyBuff, nBetasIntercept, nCols));
     }
 
     return status;

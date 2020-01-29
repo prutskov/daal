@@ -128,10 +128,11 @@ DECLARE_SOURCE(clKernelAxpy,
 __kernel void blas_axpy(const algorithmFPType a,
                         const __global algorithmFPType *x,
                         const int incx,
+                        int offsetX,
                         __global algorithmFPType *y,
-                        const int incy) {
-    const int i_x = (get_global_id(0)) * incx;
-    const int i_y = (get_global_id(0)) * incy;
+                        const int incy, int offsetY) {
+    const int i_x = (get_global_id(0)) * incx + offsetX;
+    const int i_y = (get_global_id(0)) * incy + offsetY;
     y[i_y] += x[i_x] * a;
 }
 
